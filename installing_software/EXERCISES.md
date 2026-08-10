@@ -72,62 +72,39 @@ https://curc.readthedocs.io/en/latest/software/spack.html
 
 
 --------------------------------------
-## Exercise 2: Installing Software with Conda
+## Exercise 2: Installing Software with Mamba
 
 **Objectives:**
-1) Configure your `.condarc` file
-2) Create a conda environment and install samtools 
-3) Run samtools from within the environment
+1) Create a conda environment and install samtools 
+2) Run samtools from within the environment
 
 **Estimated time to complete**: 15 minutes
 
-### **Step 1**: Configure a `.condarc` file
+### **Step 1**: Create a mamba environment containing `samtools`.
 
-**This step is required the first time using Anaconda/Miniconda/Mamba on CURC systems.**
+> **_NOTE:_** Mamba environments must be created and run from a compute node (not a login node).`
 
-Navigate to your home and create a file named `.condarc`. You can use whichever text editor you are most comfortable with (`nano`, `vim`, etc.)
+Load the default miniforge module.
+`module load miniforge`
 
-```
-cd ~
-nano .condarc
-```
+What happened to your prompt? Which mamba environment are you in?
 
-Enter the following text, save, and exit.
-```
-pkgs_dirs:
-  - /projects/$USER/.conda_pkgs
-envs_dirs:
-  - /projects/$USER/software/anaconda/envs
-```
-
-Confirm that the text was saved.
-`cat .condarc`
-
-### **Step 2**: Create a conda environment containing `samtools`.
-
-> **_NOTE:_** Conda environments must be created and run from a compute (not a login) node.`
-
-Load the default anaconda module.
-`module load anaconda`
-
-What happened to your prompt? Which anaconda environment are you in?
-
-Create an anaconda environment and install samtools.
-`conda create -n samtools_env -c bioconda samtools`
+Create a mamba environment and install samtools.
+`mamba create -n samtools_env -c bioconda samtools`
 
 Did you get an error message? Hint:
 
 ```
-conda config --show channels
-conda config -h
+mamba config --show channels
+mamba config -h
 ```
 
 Enter `y` for 'yes' when asked if you want to proceed.
 
-### **Step 3**: Activate the environment and run samtools.
+### **Step 2**: Activate the environment and run samtools.
 
 ```
-conda activate samtools_env
+mamba activate samtools_env
 samtools --help
 ```
 What happened to your prompt after you activated `samtools_env`?
@@ -136,14 +113,14 @@ What happened to your prompt after you activated `samtools_env`?
 
 https://curc.readthedocs.io/en/latest/software/python.html
 
-### Useful Conda Commands (try if you have time)
+### Useful Mamba Commands (try if you have time)
 ```
-conda env list  # list all environments
-conda list      # list packages in active env
-conda env remove -n <envname>   # remove an environment
-conda config --show channels    # view configured channels
-conda deactivate    # deactivate environment
-conda create --name <clonedenv> --clone <envtoclone> # clone an environment
+mamba env list  # list all environments
+mamba list      # list packages in active env
+mamba env remove -n <envname>   # remove an environment
+mamba config --show channels    # view configured channels
+mamba deactivate    # deactivate environment
+mamba create --name <clonedenv> --clone <envtoclone> # clone an environment
 ```
 
 --------------------------------------
@@ -167,8 +144,7 @@ echo $CURC_CONTAINER_DIR
 ls $CURC_CONTAINER_DIR
 ```
 
-A Singularity Definition File (or “def file” for short) is like a set of blueprints explaining how to build a custom container. It includes specifics about the base OS to build or the base container to start from, software to install, environment variables to set at runtime, files to add from the host system, and container metadata. 
-More information from the Apptainer user guide: https://apptainer.org/docs/user/1.0/definition_files.html
+An Apptainer Definition File (or “def file” for short) is like a set of blueprints explaining how to build a custom container. It includes specifics about the base OS to build or the base container to start from, software to install, environment variables to set at runtime, files to add from the host system, and container metadata. More information from the Apptainer user guide: https://apptainer.org/docs/user/latest/definition_files.html
 
 Check out the definition file for the `mach3_build.sif` container.
 SIF = **S**ingularity **I**mage **F**ile
@@ -185,16 +161,16 @@ For example:
 ###  Pull an image from a pre-built container, then run the program from the container. 
 We are going to create a containerized version of samtools using the Docker image found here: https://hub.docker.com/r/staphb/samtools
 
-Note that, by default, the cache directory for Singularity builds is `/scratch/alpine/$USER`.
+Note that, by default, the cache directory for Apptainer builds is `/scratch/alpine/$USER`.
 ```
 echo $APPTAINER_CACHEDIR 
 ```
 
-Use the `apptainer pull` command to create a `.sif` file from the Docker image.
-`apptainer pull samtools.sif docker://staphb/samtools`
+Use the `apptainer pull` command to create a `.sif` file from the Docker image (here we place the created image in `/projects/$USER/samtools.sif`): 
+`apptainer pull /projects/$USER/samtools.sif docker://staphb/samtools`
 
 
-Run samtools from the container. Is it the same version of samtools you got from conda and building from source? 
+Run samtools from the container. Is it the same version of samtools you got from Mamba and building from source? 
 
 Bonus question: How do `samtools_env`, `samtools.sif`, and the source installation compare in size?
 
